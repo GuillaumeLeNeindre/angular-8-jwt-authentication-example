@@ -2,7 +2,7 @@ import { Basket } from './basket';
 
 export class Distribution {
 
-    constructor(private _date:number, private _baskets: Basket[]) {};
+    constructor(private _date:Date, private _baskets: Basket[]) {};
 
     get baskets() : Basket[]
     {
@@ -14,12 +14,12 @@ export class Distribution {
         return (this._baskets.push(newBasket));
     }
 
-    get date() : number
+    get date() : Date
     {
         return this._date;
     }
 
-    set date(date : number)
+    set date(date : Date)
     {
         this._date = date;
     }

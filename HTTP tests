@@ -1,0 +1,18 @@
+@base_url = https://us-central1-amap-echanges-de-paniers.cloudfunctions.net/distributionsApp
+
+
+GET {{base_url}}/api/distributions HTTP/1.1
+
+
+################
+
+POST {{base_url}}/api/distributions HTTP/1.1
+content-type: application/json
+
+{
+    "1234567890":
+    [
+        {"jean": "test"},
+        {"test": "test"}
+    ]
+}

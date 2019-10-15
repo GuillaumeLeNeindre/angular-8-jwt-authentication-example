@@ -1,5 +1,5 @@
 export class Basket {
-    constructor(private _date:number, private _proprietary : string, private _taker?:string) {};
+    constructor(private _proprietary : string, private _taker?:string) {};
 
     get proprietary() : string
     {
@@ -9,16 +9,6 @@ export class Basket {
     set proprietary(proprietary : string)
     {
         this._proprietary = proprietary;
-    }
-
-    get date() : number
-    {
-        return this._date;
-    }
-
-    set date(date)
-    {
-        this._date = date;
     }
 
     get taker() : string

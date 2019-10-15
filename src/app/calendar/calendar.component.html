@@ -1,7 +1,18 @@
 <h1>{{title}}</h1>
 <div *ngFor="let distribution of distributions">
-    <p>Date : {{distribution.date}}</p>
-    <button (click)="dupplicateDistribution(distribution.date)">Créer une distribution à partir de celle-ci</button>
+    <p>Date : {{distribution.date | date:'dd MMMM yyyy'}}</p>
+    <button (click)="showDistributionCreationForm = distribution.date">Créer une distribution à partir de celle-ci</button>
+    <div *ngIf="showDistributionCreationForm === distribution.date">
+        <form [formGroup]="newDistributionForm" (ngSubmit)="dupplicateDistribution(distribution.date)" >
+            <div>
+                <label for="date">
+                Date
+                </label>
+                <input required date name="date" id="date" type="date" formControlName="date">
+            </div>
+            <button class="button" type="submit" [disabled]="!newDistributionForm.valid">Créer</button>
+        </form>
+    </div>
     <button (click)="deleteDistribution(distribution.date)">Supprimer cette distribution</button>
     <button (click)="setAbsence(distribution.date)">Je serai absent</button>
     <p>Paniers :</p>
