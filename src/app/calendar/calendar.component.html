@@ -1,0 +1,21 @@
+<h1>{{title}}</h1>
+<div *ngFor="let distribution of distributions">
+    <p>Date : {{distribution.date}}</p>
+    <button (click)="dupplicateDistribution(distribution.date)">Créer une distribution à partir de celle-ci</button>
+    <button (click)="deleteDistribution(distribution.date)">Supprimer cette distribution</button>
+    <button (click)="setAbsence(distribution.date)">Je serai absent</button>
+    <p>Paniers :</p>
+    <div *ngFor="let basket of distribution.baskets">
+        <p>Propriétaire : {{basket.proprietary}}</p>
+        <p *ngIf="basket.proprietary != basket.taker" >
+            <span *ngIf="!basket.taker">Le panier n'a pas de preneur
+                <button (click)="setTaker(distribution.date, basket.proprietary)">Je prends ce panier</button>
+            </span>
+            <span *ngIf="basket.taker">
+                <span *ngIf="basket.taker != currentUser.username">Le panier est enlevé par une autre personne ({{basket.taker}})</span>
+                <span *ngIf="basket.taker === currentUser.username">Je prends ce panier</span>
+            </span>
+        </p>
+    </div>
+</div>
+
