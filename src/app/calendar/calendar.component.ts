@@ -2,12 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Distribution, User, Basket } from "../_models";
 import { DistributionsService, AuthenticationService } from "../_services"
-// import { truncate } from 'fs';
 
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.less']
+  styleUrls: ['./calendar.component.css']
 })
 export class CalendarComponent implements OnInit {
   private _distributions : Distribution[];
@@ -19,15 +18,24 @@ export class CalendarComponent implements OnInit {
   constructor(
     private _distributionsService : DistributionsService,
     private authenticationService: AuthenticationService
-    ) { 
-    this._distributions = this._distributionsService.distributions;
-    this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
-    this.newDistributionForm = new FormGroup({
-      date: new FormControl(''),
-    })
-  }
+    )
+    { 
+      this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
+      this.newDistributionForm = new FormGroup(
+        {
+          date: new FormControl('')
+        });
+    }
 
   ngOnInit() {
+    this.getDistributions();
+  }
+
+  getDistributions() : void
+  {
+    this._distributionsService.getDistributions().subscribe(distributions => this._distributions = distributions);
+    console.log("HTTP request is made");
+
   }
 
   get distributions() : Distribution[]
@@ -35,13 +43,29 @@ export class CalendarComponent implements OnInit {
     return this._distributions;
   }
 
-  setAbsence(date : Date) : void
+
+  updateDistribution(updatedDistribution : Distribution) : void
   {
-    const distribution : Distribution = this._distributions.find(x => x.date === date);
+    if (updatedDistribution)
+    {
+      let toBeUpdatedDistribution : Distribution = this._distributions.find(x => x.id === updatedDistribution.id);
+      if (toBeUpdatedDistribution)
+      {
+        Object.assign(toBeUpdatedDistribution, updatedDistribution);
+      }
+    }
+  }
+
+  setAbsence(distribution : Distribution) : void
+  {
     if (distribution)
     {
-      distribution.setAbsence(this.currentUser.username);
-      this._distributionsService.distributions = this._distributions;
+      let newDistribution = Object.assign(new Distribution, distribution);
+      newDistribution.setAbsence(this.currentUser.username);
+      this._distributionsService.updateDistribution(newDistribution)
+        .subscribe(
+          (updatedDistribution : Distribution) => this.updateDistribution(Object.assign(new Distribution, updatedDistribution))
+        );
     }
     else
     {
@@ -49,13 +73,16 @@ export class CalendarComponent implements OnInit {
     }
   }
 
-  setTaker(date:Date, proprietary:string) : void
+  setTaker(distribution : Distribution, proprietary : string) : void
   {
-    const distribution : Distribution = this._distributions.find(x => x.date === date);
     if (distribution)
     {
-      distribution.setTaker(proprietary, this.currentUser.username);
-      this._distributionsService.distributions = this._distributions;
+      let newDistribution = Object.assign(new Distribution, distribution);
+      newDistribution.setTaker(proprietary, this.currentUser.username);
+      this._distributionsService.updateDistribution(newDistribution)
+        .subscribe(
+          (updatedDistribution : Distribution) => this.updateDistribution(Object.assign(new Distribution, updatedDistribution))
+        );
     }
     else
     {
@@ -63,9 +90,9 @@ export class CalendarComponent implements OnInit {
     }
   }
 
-  distributionExists() : boolean
+  distributionExists(newDate : Date) : boolean
   {
-    if (this._distributions.find(x => x.date === this.newDistributionForm.value.date))
+    if (this._distributions.find(x => x.date === newDate))
     {
       return true;
     }
@@ -75,42 +102,40 @@ export class CalendarComponent implements OnInit {
     }
   }
 
-  dupplicateDistribution(date : Date) : void
+  dupplicateDistribution(dupplicateDistribution : Distribution) : void
   {
-    if (this.distributionExists())
+    const newDate = this.newDistributionForm.value.date;
+    if (this.distributionExists(newDate))
     {
       console.log("erreur : la distribution existe déjà");
       return;
     }
-    const distribution : Distribution = this._distributions.find(x => x.date === date);
-    if (distribution)
+    if (dupplicateDistribution)
     {
-      let newDistribution = new Distribution(this.newDistributionForm.value.date, []);
-      for (let basket of distribution.baskets)
-      {
-        let newBasket = new Basket(basket.proprietary, basket.taker);
-        newDistribution.baskets.push(newBasket);
-      }
-      this._distributions.push(newDistribution);
-      this._distributionsService.distributions = this._distributions;
+      let newDistribution = Object.assign(new Distribution, dupplicateDistribution);
+      newDistribution.date = newDate;
+      
+      this._distributionsService.addDistribution(newDistribution).subscribe(returnedDistribution => {
+        this.distributions.push(Object.assign(new Distribution, returnedDistribution));
+      });
       this.showDistributionCreationForm = "";
     }
     else
     {
-      console.log("date $date not found");
+      console.log("dupplicateDistribution undefined");
     }
   }
 
-  deleteDistribution(date : Date) : void
+  deleteDistribution(distribution : Distribution) : void
   {
     for (let index = 0; index < this._distributions.length; index++)
     {
-      if (this._distributions[index].date == date)
+      if (this._distributions[index].date == distribution.date)
       {
         this._distributions.splice(index,1);
       }
     }
-    this._distributionsService.distributions = this._distributions;
+    this._distributionsService.deleteDistribution(distribution).subscribe(x => this.getDistributions());
   }
 
   

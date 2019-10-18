@@ -1,4 +1,5 @@
-@base_url = https://us-central1-amap-echanges-de-paniers.cloudfunctions.net/distributionsApp
+//@base_url = https://us-central1-amap-echanges-de-paniers.cloudfunctions.net/distributionsApp
+@base_url = http://localhost:5001/amap-echanges-de-paniers/us-central1/distributionsApp
 
 
 GET {{base_url}}/api/distributions HTTP/1.1
@@ -10,9 +11,31 @@ POST {{base_url}}/api/distributions HTTP/1.1
 content-type: application/json
 
 {
-    "1234567890":
+    "date" : "21/10/2019",
+    "baskets" :
     [
-        {"jean": "test"},
-        {"test": "test"}
+        {"proprietary" : "jean",
+        "taker": "test"},
+        {"proprietary" : "test",
+        "taker" : "test"}
     ]
 }
+
+
+###########################
+PUT {{base_url}}/api/distributions/-LrOpo_zIyoTKzIFrvRm HTTP/1.1
+content-type: application/json
+
+{
+    "date" : "2019-10-29",
+    "baskets" :
+    [
+        {"proprietary" : "jean",
+        "taker": "test"},
+        {"proprietary" : "test",
+        "taker" : "machin"}
+    ]
+}
+
+######################
+DELETE {{base_url}}/api/distributions/-LrQT2CNqneUoZ2yk3Xa HTTP/1.1

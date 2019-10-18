@@ -1,34 +1,22 @@
 import { Basket } from './basket';
 
+
 export class Distribution {
+    public id : string;
+    public baskets : Basket[];
+     public date : Date;
+    constructor () {};
 
-    constructor(private _date:Date, private _baskets: Basket[]) {};
-
-    get baskets() : Basket[]
+    addBasket(newBasket : Basket) : number
     {
-        return this._baskets;
+        return (this.baskets.push(newBasket));
     }
-
-    newBasket(newBasket : Basket) : number
-    {
-        return (this._baskets.push(newBasket));
-    }
-
-    get date() : Date
-    {
-        return this._date;
-    }
-
-    set date(date : Date)
-    {
-        this._date = date;
-    }
-
+    
     setAbsence(taker : string) : void
     {
         if (taker)
         {
-            for (const basket of this._baskets)
+            for (const basket of this.baskets)
             {
                 if (basket.taker === taker)
                 {
@@ -42,7 +30,7 @@ export class Distribution {
     {
         if (proprietary)
         {
-            const basket : Basket = this._baskets.find(x => x.proprietary === proprietary);
+            const basket : Basket = this.baskets.find(x => x.proprietary === proprietary);
             if (basket)
             {
             basket.taker = taker;
